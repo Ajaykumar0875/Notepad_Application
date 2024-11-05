@@ -183,37 +183,6 @@ function createAndAppendTask(task) {
 
 }
 
-
-function addTasks() {
-    let userGivenInput = document.getElementById("userInput");
-    let userGivenDescription = document.getElementById("inputDescription");
-    let userGivenInputValue = userGivenInput.value;
-    let userGivenDescriptionValue = userGivenDescription.value;
-    taskCount += 1;
-
-    if (userGivenInputValue === '') {
-        alert("Please enter valid task");
-        return;
-    }
-    if (userGivenDescriptionValue === '') {
-        alert("Please enter valid description");
-        return;
-    }
-    let newTasks = {
-        Task: userGivenInputValue,
-        Description: userGivenDescriptionValue,
-        uniqueId: taskCount,
-        isSelected: false,
-    };
-    taskList.push(newTasks);
-    createAndAppendTask(newTasks);
-    userGivenInput.value = "";
-    userGivenDescription.value = '';
-
-
-
-}
-
 for (let task of taskList) {
     createAndAppendTask(task);
 }
