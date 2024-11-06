@@ -19,30 +19,32 @@ let taskList = getTaskListFromLocalStorage();
 
 
 
-
 function DeleteTask(TaskId) {
     let taskElement = document.getElementById(TaskId);
-    ulTaskContainer.removeChild(taskElement);
-    let taskIndex = taskList.findIndex(function(eachTask) {
-        let eachTaskId = "Task" + eachTask.uniqueId;
-        if (eachTaskId === TaskId) {
-            return true;
-        } else {
-            return false;
+
+    taskElement.classList.add("slide-out");
+
+    setTimeout(function() {
+        ulTaskContainer.removeChild(taskElement);
+
+        let taskIndex = taskList.findIndex(function(eachTask) {
+            let eachTaskId = "Task" + eachTask.uniqueId;
+            return eachTaskId === TaskId;
+        });
+
+        if (taskIndex >= 0) {
+            taskList.splice(taskIndex, 1);
         }
-    });
-    taskList.splice(taskIndex, 1);
-    // saveTasks();
-
-
+    }, 500);
 }
+
 
 function addTasks() {
     let userGivenInput = document.getElementById("userInput");
     let userGivenDescription = document.getElementById("inputDescription");
     let userGivenInputValue = userGivenInput.value;
     let userGivenDescriptionValue = userGivenDescription.value;
-    taskCount += 1;
+    taskCount = taskCount + 1;
 
     if (userGivenInputValue === '') {
         alert("Please enter valid task");
@@ -58,10 +60,11 @@ function addTasks() {
         uniqueId: taskCount,
         isSelected: false,
     };
+    taskList.push(newTasksList);
     createAndAppendTask(newTasksList);
     userGivenInput.value = "";
     userGivenDescription.value = '';
-
+    saveTasks();
 }
 
 function saveTasks() {
@@ -75,39 +78,22 @@ saveBtn.onclick = function() {
 addBtn.onclick = function() {
     addTasks();
 }
-
 function onTodoStatusChange(checkboxId, labelId, descriptionId, TaskId) {
-    let descriptionElement = document.getElementById(descriptionId);
     let checkboxElement = document.getElementById(checkboxId);
-    console.log(checkboxElement.checked);
     let labelElement = document.getElementById(labelId);
-    labelElement.classList.toggle("checked");
-    descriptionElement.classList.toggle("checked");
-    // if (checkboxElement.checked === true) {
-    //     labelElement.classList.add("checked");
-    //     descriptionElement.classList.add("checked");
-    // } else {
-    //     labelElement.classList.remove("checked");
-    //     descriptionElement.classList.remove("checked");
-    //     descriptionElement.classList.remove("checked");
-    // }
+    let descriptionElement = document.getElementById(descriptionId);
 
+    // Toggle the checked class based on checkbox status
+    labelElement.classList.toggle("checked", checkboxElement.checked);
+    descriptionElement.classList.toggle("checked", checkboxElement.checked);
+
+    // Find the task in the taskList and update its isSelected property
     let taskObjectIndex = taskList.findIndex(function(eachTask) {
-        eachTaskId = "Task" + eachTask.uniqueId;
-
-        if (eachTaskId === TaskId) {
-            return true;
-        } else {
-            return false;
-        }
+        return "Task" + eachTask.uniqueId === TaskId;
     });
-    let taskObject = taskList[taskObjectIndex];
-    // console.log(taskObject);
-
-    if (taskObject.isSelected === true) {
-        taskObject.isSelected = false;
-    } else {
-        taskObject.isSelected = true;
+    
+    if (taskObjectIndex !== -1) {
+        taskList[taskObjectIndex].isSelected = checkboxElement.checked;
     }
 }
 
@@ -121,6 +107,8 @@ function createAndAppendTask(task) {
 
     let taskElement = document.createElement("li");
     taskElement.id = TaskId;
+    taskElement.classList.add("fade-in");
+
 
     ulTaskContainer.appendChild(taskElement);
     taskElement.classList.add("Ul-task-Container", "d-flex", "flex-row");
@@ -131,7 +119,7 @@ function createAndAppendTask(task) {
     inputElement.type = "checkbox";
     inputElement.id = checkboxId;
     inputElement.classList.add("checkbox-input");
-    inputElement.checked = task.isSelected; // <-- Add this line
+    inputElement.checked = task.isSelected;
     inputElement.style.cursor = "pointer";
     taskElement.appendChild(inputElement);
     inputElement.onclick = function() {
@@ -149,6 +137,8 @@ function createAndAppendTask(task) {
     labelContainer.appendChild(labelElement);
     labelElement.textContent = task.Task;
     labelElement.classList.add("label-style");
+        labelElement.classList.toggle("checked", task.isSelected); // Add checked class if selected
+
     if (task.isSelected === true) {
         labelElement.classList.add("checked");
     }
@@ -175,6 +165,8 @@ function createAndAppendTask(task) {
     descriptionElement.id = DescriptionId;
     descriptionElement.textContent = task.Description;
     descriptionElement.style.marginTop = "-40px";
+        descriptionElement.classList.toggle("checked", task.isSelected); // Add checked class if selected
+
     labelContainer.appendChild(descriptionElement);
     if (task.isSelected === true) {
         descriptionElement.classList.add("checked");
