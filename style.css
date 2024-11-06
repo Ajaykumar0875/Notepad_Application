@@ -54,6 +54,42 @@ textarea {
     font-weight: 400;
 }
 
+.animated-input {
+    border: 2px solid #ddd;
+    padding: 8px 12px;
+    transition: border-color 0.3s ease;
+}
+
+.animated-input:focus {
+    border-color: #198754;
+    /* Matches the btn-success green color */
+    outline: none;
+}
+
+.animated-input::placeholder {
+    color: #999;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.animated-input:focus::placeholder {
+    transform: translateY(-8px);
+    opacity: 0.5;
+}
+
+.grow-on-focus {
+    padding: 8px 12px;
+    transition: transform 0.3s ease;
+}
+
+.grow-on-focus:focus {
+    transform: scale(1.05);
+    border-color: #198754;
+    /* Matches btn-success green color */
+}
+
+
+
+
 .sub-container {
     padding: 10px;
 }
@@ -84,6 +120,27 @@ textarea {
     padding: 10px;
 }
 
+.buttonSave {
+    background-color: #28a745;
+    color: white;
+}
+
+.buttonSave:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+.buttonAdd {
+    background-color: #28a745;
+    color: white;
+}
+
+.buttonAdd:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+
 .label-style {
     font-family: "Roboto";
     font-weight: 600;
@@ -110,8 +167,44 @@ textarea {
     color: red;
 }
 
-
 .checked {
     text-decoration: line-through;
     font-style: italic;
+}
+
+
+/* //This code works when user adds tasks 😁😁 */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.slide-out {
+    animation: slideOut 0.3s ease-in-out forwards;
 }
