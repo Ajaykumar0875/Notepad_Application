@@ -1,11 +1,10 @@
 let ulTaskContainer = document.getElementById("ulTaskContainer");
 let addBtn = document.getElementById("addBtn");
 let saveBtn = document.getElementById("saveBtn");
-let taskCount = 0;
 
 
 function getTaskListFromLocalStorage() {
-    let stringifiedList = localStorage.getItem("TaskList");
+    let stringifiedList = localStorage.getItem("taskList");
     let parsedStringifiedList = JSON.parse(stringifiedList);
 
     if (parsedStringifiedList === null) {
@@ -14,10 +13,48 @@ function getTaskListFromLocalStorage() {
         return parsedStringifiedList;
     }
 }
-
 let taskList = getTaskListFromLocalStorage();
+let tasksCount;
+
+if (taskList.length === 0) {
+    tasksCount = 0;
+} else {
+    tasksCount = taskList[taskList.length - 1].uniqueId;
+}
 
 
+
+
+
+function addTasks() {
+    let userGivenInput = document.getElementById("userInput");
+    let userGivenDescription = document.getElementById("inputDescription");
+    let userGivenInputValue = userGivenInput.value;
+    let userGivenDescriptionValue = userGivenDescription.value;
+    tasksCount = tasksCount + 1;
+
+    if (userGivenInputValue === '') {
+        alert("Please enter valid task");
+        return;
+    }
+    if (userGivenDescriptionValue === '') {
+        alert("Please enter valid description");
+        return;
+    }
+
+    tasksCount++;
+    let newTasksList = {
+        Task: userGivenInputValue,
+        Description: userGivenDescriptionValue,
+        uniqueId: tasksCount,
+        isSelected: false,
+    };
+    taskList.push(newTasksList);
+    createAndAppendTask(newTasksList);
+    userGivenInput.value = "";
+    userGivenDescription.value = '';
+
+}
 
 function DeleteTask(TaskId) {
     let taskElement = document.getElementById(TaskId);
@@ -39,36 +76,10 @@ function DeleteTask(TaskId) {
 }
 
 
-function addTasks() {
-    let userGivenInput = document.getElementById("userInput");
-    let userGivenDescription = document.getElementById("inputDescription");
-    let userGivenInputValue = userGivenInput.value;
-    let userGivenDescriptionValue = userGivenDescription.value;
-    taskCount = taskCount + 1;
 
-    if (userGivenInputValue === '') {
-        alert("Please enter valid task");
-        return;
-    }
-    if (userGivenDescriptionValue === '') {
-        alert("Please enter valid description");
-        return;
-    }
-    let newTasksList = {
-        Task: userGivenInputValue,
-        Description: userGivenDescriptionValue,
-        uniqueId: taskCount,
-        isSelected: false,
-    };
-    taskList.push(newTasksList);
-    createAndAppendTask(newTasksList);
-    userGivenInput.value = "";
-    userGivenDescription.value = '';
-    saveTasks();
-}
 
 function saveTasks() {
-    localStorage.setItem("TaskList", JSON.stringify(taskList));
+    localStorage.setItem("taskList", JSON.stringify(taskList));
 }
 
 saveBtn.onclick = function() {
@@ -79,23 +90,27 @@ addBtn.onclick = function() {
     addTasks();
 }
 function onTodoStatusChange(checkboxId, labelId, descriptionId, TaskId) {
+    let descriptionElement = document.getElementById(descriptionId);
     let checkboxElement = document.getElementById(checkboxId);
     let labelElement = document.getElementById(labelId);
-    let descriptionElement = document.getElementById(descriptionId);
 
-    // Toggle the checked class based on checkbox status
+    // Toggle the visual checked state
     labelElement.classList.toggle("checked", checkboxElement.checked);
     descriptionElement.classList.toggle("checked", checkboxElement.checked);
 
-    // Find the task in the taskList and update its isSelected property
+    // Update the isSelected property of the task
     let taskObjectIndex = taskList.findIndex(function(eachTask) {
-        return "Task" + eachTask.uniqueId === TaskId;
+        let eachTaskId = "Task" + eachTask.uniqueId;
+        return eachTaskId === TaskId;
     });
-    
+
     if (taskObjectIndex !== -1) {
         taskList[taskObjectIndex].isSelected = checkboxElement.checked;
+        // Save the updated taskList to localStorage after a change
+        saveTasks();
     }
 }
+
 
 
 function createAndAppendTask(task) {
@@ -137,8 +152,6 @@ function createAndAppendTask(task) {
     labelContainer.appendChild(labelElement);
     labelElement.textContent = task.Task;
     labelElement.classList.add("label-style");
-        labelElement.classList.toggle("checked", task.isSelected); // Add checked class if selected
-
     if (task.isSelected === true) {
         labelElement.classList.add("checked");
     }
@@ -165,8 +178,6 @@ function createAndAppendTask(task) {
     descriptionElement.id = DescriptionId;
     descriptionElement.textContent = task.Description;
     descriptionElement.style.marginTop = "-40px";
-        descriptionElement.classList.toggle("checked", task.isSelected); // Add checked class if selected
-
     labelContainer.appendChild(descriptionElement);
     if (task.isSelected === true) {
         descriptionElement.classList.add("checked");
